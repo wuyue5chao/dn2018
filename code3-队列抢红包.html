@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+<script type="text/javascript">
+// 抢红包
+/*
+	网络问题
+*/
+
+// 定义一个队列
+function Queue(size, sum){
+    var list = []    // 类数组对象，存放队列数据的容器
+
+    // 向队列中添加数据 进队列
+    this.push = function(data){
+        if(data == null) return false
+        /*if(size != null && !isNaN(size)) {
+            if(list.length == size){
+                this.pop()
+            }
+        }*/
+        list.unshift(data)
+    }
+
+    // 根据人数分配红包
+    this.show = function(){
+    	var money
+    	for(var i=0; i<size; i++){
+    		money = (Math.random()*sum).toFixed(2)    // (0,200)
+    		if(size == (i+1)){
+    			money = sum.toFixed(2)
+    		}else{
+    			sum = sum - money 
+    		}
+    		
+    		console.log(this.pop() + '抢到了红包' + money + '元')
+    	}
+    }
+
+    // 读取队列的数据 出队列
+    this.pop = function(data){
+        return list.pop()   // 取出左后一个数据
+    }
+    this.getQueue = function(){
+        return list
+    }
+}
+// var queue = new Queue(2)
+// queue.push('a')
+// queue.push('c')
+// queue.getQueue()     // ['c','a']
+// queue.pop()
+
+var queue = new Queue(5,200)   // 发3个红包 200块钱
+var person = ['a1', 'a2', 'a3', 'a4']
+for(var i=0; i<person.length; i++){
+	queue.push(person[i])
+}
+console.log(queue.getQueue())
+
+queue.show()
+
+// 异步队列  -- 直播
+</script>	
+</body>
+</html>

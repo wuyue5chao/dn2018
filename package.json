@@ -1,0 +1,15 @@
+{
+  "name": "dn",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cors": "^2.8.4",
+    "http-proxy-middleware": "^0.19.0"
+  }
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	
+</head>
+<body>
+	<template id="dn-hello">
+		<style type="text/css">
+			h3{
+				color: red;
+			}
+		</style>
+		<h3>这是我们第一个组件：dn-hello</h3>
+	</template>
+	<script type="text/javascript">
+	// 第一步 获取对象
+
+		// 指向导入的文档 就是index.html的文档 
+		var indexDoc = document  
+		console.log(indexDoc.getElementById('hello'))
+
+		// 指向当前文档 就是dn-hello
+		var currentDoc = (indexDoc.currentScript || indexDoc._currentScript).ownerDocument
+		console.log(currentDoc.getElementById('dn-hello'))
+
+		var tmpl = currentDoc.querySelector('#dn-hello')
+
+	// 第二步 注册元素
+
+		// 创建一个新的元素原型 继承于HTMLElement
+		var helloProto = Object.create(HTMLElement.prototype)
+
+	// 第三步 显示组件
+		helloProto.createdCallback = function(){
+			// console.log(this)  // 指向的注册的标签
+			// 创建虚拟Dom
+			var root = this.createShadowRoot()
+			// 就是开辟一个独立的作用域空间
+			root.appendChild(indexDoc.importNode(tmpl.content, true))
+
+			this.innerHTML = tmpl.innerHTML
+		}
+
+
+		var hello = indexDoc.registerElement('dn-hello', {
+			prototype: helloProto
+		})
+	</script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+<script type="text/javascript">
+	/*a.js 独立作用域
+	// 模块的名称、依赖的模块
+	define('a', []， function(){   // define 由模块加载器提供的方法
+		// 逻辑处理 对外暴露 对内使用
+		var obj = {}
+		return {
+			obj: obj
+		}
+
+	})  
+	c.js
+	var a = require('a')   // {obj:obj}
+	a.obj  // {}
+
+
+	var obj = {}  // 对外暴露 对内使用
+
+
+	module.export.obj = obj   // obj 对外暴露的接口
+
+	require('a.js')   // module.exports = {}
+
+	node中使用commonJs规范实现模块记载机制，每个.js文件都是一个模块
+	module 当前的模块
+	module.exports = {} 定义对外暴露的接口
+
+	对象的命名空间*/
+</script>
+<script type="text/javascript" src="./sea.js"></script>
+<script type="text/javascript">
+	seaUse(['a','b'], function(a,b){
+		a.addName()
+		b.deleteName()
+		// console.log('slow')
+	})
+</script>
+</body>
+</html>

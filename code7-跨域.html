@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	服务器代理实现跨域
+	同源策略针对的是浏览器
+	服务器代理 是没有经过浏览器  不受同源策略的限制
+
+	https://blog.csdn.net/msmile_my/article/details/52167698
+
+<script type="text/javascript">
+// jsonp 原生写法
+var callback = function(json){
+	console.log('jsonp原生跨域，返回结果：' + json.name)
+	document.getElementById('js').onclick = function(){
+		var url = 'http://www.boss-edu.com/data.php?callback=callbackHander'
+		var script = document.createElement('script')
+		script.setAttribute('src', url)
+		document.getElementsByTagName('head')[0].appendChild(script)
+		// 服务器返回结果为 callbackHander ({name: 'zhangsan'})
+	}
+}
+
+// jq ajax 发起请求
+$('#jq').on('click', function(){
+	$.ajax({
+		type: 'get',
+		url: 'http://www.hnxfjzc.com/data.php',
+		dataType: 'jsonp',
+		jsonp: 'callback',  // 传递给请求处理程序或者页面，获取jsonp回调函数的参数名字
+		success: function(data){
+			console.log('jq跨域请求，返回结果：' + data.name)
+		}
+	})
+})
+
+
+</script>
+</body>
+</html>

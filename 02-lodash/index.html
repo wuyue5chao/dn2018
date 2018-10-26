@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>数组去重</title>
+</head>
+<body>
+<script type="text/javascript" src="./lodash.js"></script>
+<script type="text/javascript">
+console.log(_().uniq())
+console.log(_.uniq())
+
+
+function unique(arr, isSort, callback){
+	var res = []
+	var see;  // 相邻数据的引用值
+	if(typeof isSort != 'boolean'){
+		callback = isSort
+		isSort =  false
+	}
+	for(var i=0; i<arr.length; i++){
+		var computed = callback ? callback(arr[i]) : arr[i]
+		if(isSort){
+			if(!i || computed != see){
+				res.push(computed)
+			}
+			see = computed
+		}else if(res.indexOf(computed) === -1){
+				res.push(computed)
+		}	
+	}
+	return res
+}
+
+// var arr = [1,2,2,3,3,4,5,5,6,'a','A']
+var arr = [1,2,1,2,4,4]
+console.log(unique(arr,function(key){
+	return typeof key === 'string' ? key.toLowerCase() : key
+}))
+</script>	
+</body>
+</html>

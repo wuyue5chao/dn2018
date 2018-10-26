@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	案例展现
+	源码分析
+	需求整理
+	现场实现
+	国际化（international）
+	对象前端UI语言的控制
+
+<script type="text/javascript" src="code4-i18n.js"></script>语言 
+<script type="text/javascript">
+	// 安装一个语言
+	var __lang__ = 'en'
+	I18N.init(__lang__, {
+		days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+	    daysShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+	    daysMin: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
+	    months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+	    monthsShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+	    today: "Today"
+	})   
+	I18N.init('zh-CN', {
+
+	})
+
+	// I18N.getMessage()
+	// 全局范围去获取信息
+	var today1 = I18N.msg('en', 'today')
+	// 把范围限制到了en
+	var en = I18N.lang('en')
+	var today2 = en.msg('today')
+
+	console.log(today2)
+
+	var vals = I18N.getValsByLang('en')
+</script>
+</body>
+</html>

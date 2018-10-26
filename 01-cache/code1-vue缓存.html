@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+<div id="app">
+	<p>{{message}}</p>
+	<!-- <ul>
+		<li v-for='user in users' >{{user.name}}</li>
+	</ul> -->
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script type="text/javascript">
+var app1 = document.getElementById('app')
+console.log(app1)  // 虚拟dom
+
+// MVVM 数据驱动视图
+var model = {
+	message: 'hello',
+	users: [
+		{name: 'Lucy', age: 22},
+		{name: 'Hide', age: 12},
+		{name: 'Jone', age: 45}
+	]
+}
+var app = new Vue({
+	el: '#app',
+	data: model
+})
+
+var app2 = document.getElementById('app')
+console.log(app2)
+console.log(app1 === app2)   // false
+
+// 虚拟dom 就是它只存在于内存中，不显示在页面中
+
+// 观察者模式
+
+// vue 的缓存策略
+
+// 1、必须创建一个dom createElement,每次创建完后，会把这个对象缓存起来
+window.setTimeout(function(){
+	model.users.push({name: 'Sos', age: 23})
+	window.setTimeout(function(){
+		// 2、移除element，移除的知识真实Dom上面的元素，而虚拟Dom的缓存池没有移除
+		model.users.pop()
+		window.setTimeout(function(){
+			//3、必须创建createElemet, 发现之前有缓存可用，所以不用创建直接获得缓存中的Dom
+			model.users.push({name: 'Xihe', age: 23})
+		},5000)
+	},5000)
+},5000)
+
+/*
+前端的性能优化的瓶颈
+	1、尽量减少没必要的服务器请求  sprite图
+		responseCode 200 正常请求
+				 	 304 本地缓存（尽量选这个）
+	2、尽量减少资源内容的大小 压缩文件
+		jquery.min.js
+		gulp, grunt, webpack(不管你依赖多少个js,都直接打包成一个bundle.js)
+	3、图片的缓存（处理）纯二进制的数据流
+	4、尽量减少DOM的渲染 
+		创建 document.createElement ele.cloneNode 非常耗内存
+		(1) 尽量减少创建新的DOM
+		(2) 如果必须要创建很多dom，用createDocumentFragement（文档碎片）
+*/
+</script>	
+
+<script type="text/javascript" src="./code1-cache.js"></script>
+<script type="text/javascript">
+	console.log()
+</script>
+</body>
+</html>

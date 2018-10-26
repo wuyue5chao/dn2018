@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+降低耦合度，高扩展性，职责分明
+增加系统的复杂度
+
+<script type="text/javascript">
+// 代理模式
+function PanJl(name){
+	this.name = name
+}
+PanJl.prototype = {
+	happy: function(){
+		console.log(this.name + ' is happy')
+	},
+	makeEyes: function(){
+		console.log(this.name + ' is making eyes')
+	}
+}
+
+// 代理 单一职责原则
+// 
+function ProxyWp(user){
+	this.user = user
+}
+ProxyWp.prototype = {
+	happy: function(){
+		console.log('代理职责')
+		return this.user.happy()
+	},
+	makeEyes: function(){
+		return this.user.makeEyes()
+	}
+}
+
+// var ximen = new PanJl('Pxx')
+// ximen.happy()
+
+var pjl = new PanJl('Pxx')
+var xmq = new ProxyWp(pjl)
+xmq.happy()
+
+// 上班打卡 
+// 补卡的方法
+var fillOut = function(lateDate){
+	this.lateDate = lateDate
+}
+
+// 代理 秘书
+var proxyAssis = function(fillOut){
+	this.state = function(isSuccess){
+		// 得到boss实例对象 调用boss的方法
+		(new bigBoss(fillOut)).state(isSuccess)
+	}
+}
+
+var bigBoss = function(fillOut){
+	this.state = function(isSuccess){
+		console.log('补卡时间：' + fillOut.lateDate + '；补卡状态：' + isSuccess)
+	}
+}
+
+// var boss = new bigBoss(new fillOut('2018-9-30'))
+// boss.state('同意')
+
+var proxy = new proxyAssis(new fillOut('2018-10-1'))
+proxy.state('不同意')
+
+// 保护代理 会员
+// 缓存代理 
+// 虚拟代理 图片预加载
+// 远程代理 跨域 vue proxy 用代理模式去读取数据
+
+// a -> b
+// a -- www.baidu.com -> c(拿到b的数据) -> b --api.baidu.com
+
+</script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+<style type="text/css">
+#container{
+	width: 200px;
+	height: 100px;
+	color: #fff;
+	background: #333;
+	text-align: center;
+	line-height: 100px;
+}
+</style>
+</head>
+<body>
+	js的防抖与节流
+	频繁的触发事件--> 函数式编程
+	函数方法 三个部分：定义、执行、返回
+	
+
+	射击游戏、文本输入实时查询
+	懒加载
+
+	防抖：实时搜索、拖拽
+		  防止频繁触发带来的DOM抖动
+	节流：窗口调整大小、页面滚动、抢购时疯狂点击
+
+
+<div id="container"></div>
+</body>
+<script type="text/javascript">
+
+var count = 1
+var container = document.getElementById('container')
+
+function getUserAction(){
+	container.innerHTML = count++
+
+	// 如果是异步 ajax
+}
+
+// container.onmousemove = getUserAction;
+container.onmousemove = debounce(getUserAction, 1000);
+
+// 写一个中间函数
+function debounce(func, wait){
+	var timeout  // 接收定时器的返回，用作取消
+	return function(){
+		clearTimeout(timeout)
+		timeout = setTimeout(func, wait);
+	}
+}
+</script>
+</html>

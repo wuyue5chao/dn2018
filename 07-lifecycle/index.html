@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<!-- 生命周期
+	
+	标签的生命周期函数 - 标签实例化后自动调用 
+	
+	创建标签的实例 document.createElement('dn-tag')
+	createdCallback
+	
+	当该元素添加到DOM上的时候 就是attached
+	attachedCallback
+	
+	当该元素添加到DOM上移除的时候 就是detached
+	detachedCallback
+	
+	生命周期方法 （生理性质的）
+	事件的方法 click事件（功能性质的） -->
+
+<button onclick="play()">开始</button>
+<button onclick="pause()">暂停</button>
+<button onclick="resume()">继续</button>
+<button onclick="stop()">结束</button>
+<script type="text/javascript">
+	// var dnTagProto = Object.create(HTMLElement.prototype)
+
+	function play(){
+		video.play()
+	}
+	function pause(){
+		video.pause()
+	}
+	function resume(){
+		video.resume()
+	}
+	function stop(){
+		video.stop()
+	}
+
+	// video
+	function DnVideo(src, root, width, height){
+		this.init(src, root, width, height)
+	}
+	DnVideo.prototype = {
+		init: function(src, root, width, height){
+			this.__c__ = document.createElement('video')
+			this.__c__.src = src
+			this.__c__.width = width
+			this.__c__.height = height
+
+			// this.test(this.__c__, true)
+			root && this.appendTo(root)
+
+			this.accessors()
+		},
+		test: function(target,func){
+			var str = ''
+			for(var prop in target){
+				if(func){
+					if( typeof target[prop] === 'function')
+					str += prop + '  '
+				}else{
+					str += prop + '  '
+				}
+				
+			}
+			console.log(str)
+		},
+		accessors: function(){
+			var that = this
+			Object.defineProperty(this, 'onPlay', {
+				configurable: true,
+				enumberable: true,
+				get: function(){
+					return value
+				},
+				set: function(func){
+					that.__c__.onplay = func
+				}
+			})
+		},
+		lifecycle: function(events){
+			this.__e__ = events
+		},
+		appendTo: function(root){
+			root.appendChild(this.__c__)
+		},
+		play: function(){
+			this.__c__.play()
+			this.__e__.onPlayCallback && this.__e__.onPlayCallback.call(this)
+		},
+		resume: function(){
+			this.__c__.play()
+			this.__e__.onPlayCallback && this.__e__.onPlayCallback.call(this)
+		},
+		pause: function(){
+			this.__c__.pause()
+			this.__e__.onStopCallback && this.__e__.onStopCallback.call(this)
+		},
+		stop: function(){
+			this.__c__.load()
+			this.__e__.onStopCallback && this.__e__.onStopCallback.call(this)
+		}
+	}
+	var video = new DnVideo('./sd1538534307_2(0).mp4', document.body, 400, 300)
+
+	video.onPlay = function(){
+		console.log('开始播放了')
+	}
+	// 事件回调
+	video.lifecycle({
+		onPlayCallback: function(){
+			console.log(this)
+		},
+		onStopCallback: function(){
+			// console.log(this)
+		}
+	})
+</script>
+</body>
+</html>

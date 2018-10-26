@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>promise</title>
+</head>
+<body>
+<script type="text/javascript">
+	// promise 异步操作
+	// 当我们采用回调模式异步编程时，容易产生“回调地狱” - 一个回调函数中嵌套多个回调函数
+	// vue babel-porufill
+
+	function fn1(fn){
+		setTimeout(function(){
+			console.log('this is 1')
+			// fn2()   // 2秒后执行 1,2
+			fn()
+		},2000)
+		// console.log('this is 1')
+	}
+	function fn2(fn){
+		console.log('this is 2')
+		fn()
+	}
+	function fn3(){
+		console.log('this is 3')
+	}
+
+	// fn1()
+	// fn2()
+
+	/*fn1(function(){
+		fn2(function(){
+			fn3()
+		})
+	})*/
+
+	// 回调地狱 --> 回调 --> 异步编程
+	// 缺点：函数嵌套 可读性差；信任问题
+
+	// promise在开发中有两种方式：
+	// 1、同步
+	// 喝茶： 烧水（5s）茶（1s）洗杯子（2s）
+
+	let boilwater = function(){
+		return new Promise(function(resolve, reject){
+			setTimeout(function(){
+				resolve('boilwater')
+			},5000)
+		})
+	}
+
+	let tea = function(){
+		return new Promise(function(resolve, reject){
+			setTimeout(function(){
+				resolve('tea')
+			},1000)
+		})
+	}
+
+	let washGlass = function(){
+		return new Promise(function(resolve, reject){
+			setTimeout(function(){
+				resolve('washGlass')
+			},2000)
+		})
+	}
+
+	console.time()
+
+	// data resolve传入的值
+	/*
+	boilwater().then(function(data){
+		console.log(data)
+		return tea()
+	}).then(function(data){
+		console.log(data)
+		return washGlass()
+	}).then(function(data){
+		console.log(data)
+		console.timeEnd()   // 大于等于8s
+	})
+	*/
+
+	// 2、异步
+
+	/*
+	Promise.all([boilwater(), tea(), washGlass()]).then(function(data){
+		console.log(data)
+		console.timeEnd()  // 大于等于5s
+	})
+	*/
+
+	// promise原理
+
+	let test = function(){
+		return {
+			name: function(){
+				console.log('remi')
+			}
+		}
+	}
+	console.log(test().name())   // 链式写法
+
+	// 第一步 实现promise的初步构建 外壳
+	function myPromise1(){
+		this.then = function(){
+			console.log('then method start')
+		}
+	}
+
+	var pTea1 = function(){
+		return new myPromise1()
+	}
+
+	pTea1().then()
+
+	// 第二步 实现promise的一个流程 成功怎么办？失败了怎么办？
+	function myPromise2(fn){
+		let callback = null
+		let value = null
+		this.then = function(cb){
+			callback = cb   // 执行的then方法 就拿到回调函数
+		}
+
+		function resolve(val){  // 异步成功
+			callback(val)
+		}
+
+		fn(resolve)
+
+	}
+
+	var pTea2 = function(){
+		console.log('开始')
+		return new myPromise2(function(resolve){
+			setTimeout(function(){
+				resolve('pTea2')
+			},2000)
+		})
+	}
+
+	pTea2().then(function(data){
+		console.log(data)
+		console.log('结束')
+	})
+
+	// 第三步 加入链式支持
+
+	function myPromise3(fn){
+		let self = this
+		let value = null
+
+		self._resolve = [] // 调用then方法 将回调保存到队列
+
+		this.then = function(cb){
+			self._resolve.push(cb)   // 执行的then方法 就拿到回调函数
+			return this;  // 返回当前对象 链式写法
+		}
+
+		function resolve(val){  // 异步成功
+			// 如果传入的是一个不包含异步操作的函数 resolve就会先于then执行
+			// 也就是说self._resolve数组对象是一个空的数组，之所以加setTimeout就是改变执行优先级
+
+			setTimeout(function(){
+				self._resolve.forEach(function(callback){
+					callback(val)
+				})	
+			}, 0)
+			
+		}
+
+		fn(resolve)
+
+	}
+
+	var pTea3 = function(){
+		return new myPromise3(function(resolve){
+			// setTimeout(function(){
+				resolve('pTea2')
+			// },2000)
+		})
+	}
+
+	var pWashGlass3 = function(){
+		return new myPromise3(function(resolve){
+			setTimeout(function(){
+				resolve('pWashGlass3')
+			},2000)
+		})
+	}
+
+	pTea3().then(function(data){
+		console.log(data)
+	})
+
+	/*pTea3().then(function(data){
+		console.log(data)
+		return pWashGlass3()
+	}).then(function(data){
+		console.log(data)
+	})*/
+
+	// 第四步 引入状态+串行
+	// pending fulfilled rejected
+
+	function myPromise4(fn){
+		let self = this
+		let value = null
+
+		self._resolve = [] // 调用then方法 将回调保存到队列
+		self._status = 'PENDING' 
+
+		this.then = function(cb){
+			return new myPromise4(function(resolve){
+				function handle(value){
+					var ret = typeof cb === 'function' && cb(value) || value
+					if(ret && typeof ret['then'] === 'function'){
+						ret.then(function(value){
+							resolve(value)
+						})
+					}else{
+						resolve(ret)
+					}
+				}
+
+				if(self._status === 'PENDING'){
+					self._resolve.push(handle)   // 执行的then方法 就拿到回调函数
+				}else if(self._status === 'FULFILLED'){
+					handle(value)
+				}
+			})
+		}
+
+		function resolve(val){  // 异步成功
+			// 如果传入的是一个不包含异步操作的函数 resolve就会先于then执行
+			// 也就是说self._resolve数组对象是一个空的数组，之所以加setTimeout就是改变执行优先级
+
+			setTimeout(function(){
+				self._resolve.forEach(function(callback){
+					self._status = 'FULFILLED'
+					callback(val)
+				})	
+			}, 0)
+			
+		}
+
+		fn(resolve)
+
+	}
+
+	var pTea4 = function(){
+		return new myPromise4(function(resolve){
+			// setTimeout(function(){
+				resolve('pTea2')
+			// },2000)
+		})
+	}
+
+	var pWashGlass4 = function(){
+		return new myPromise4(function(resolve){
+			setTimeout(function(){
+				resolve('pWashGlass4')
+			},2000)
+		})
+	}
+
+	/*pTea4().then(function(data){
+		console.log(data)
+	})*/
+
+	pTea4().then(function(data){
+		console.log(data)
+		return pWashGlass4()
+	}).then(function(data){
+		console.log(data)
+	})
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>用递归模拟双色球摇奖</title>
+</head>
+<body>
+<script type="text/javascript">
+/*var blue = Math.floor(Math.random() * 16 + 1)  // 1-16随机数
+var red = new Array(6)
+
+//自定义一个某数是否存在于某数组中
+var existByArray = function(num, arr){
+	for(var i=0; i<arr.length; i++){
+		if(num === arr[i]){
+			return true
+		}
+	}
+
+	return false
+}
+
+for(var i=0; i<red.length; i++){
+	var num = Math.floor(Math.random() * 33 + 1)   // 1-33随机数
+	if(!existByArray(num, red)){
+		red[i] = num
+	}else{
+		i--
+	}
+}
+
+console.log('篮球：' + blue)
+console.log('红球：' + red)*/
+
+// 定义一个红球的摇奖池
+var pool = new Array(34)
+var blue = blue = Math.floor(Math.random() * 16 + 1)
+// 初始化摇奖池
+var shuffling = function(){
+	for(var i=0; i<pool.length; i++){
+		pool[i] = true
+	}
+}
+// 产生一个红球的函数
+var getOneRedBall = function(){
+	var num = Math.floor(Math.random() * 33 + 1)
+	console.log('产生红球随机数:' + num)
+	if(pool[num]){
+		pool[num] = false
+		return num
+	}else{
+		// 递归 重新产生一个红球
+		return getOneRedBall()
+	}
+}
+
+// 启动摇奖
+var play = function(){
+	shuffling()
+	var red = new Array(6)
+	for(var i=0; i<red.length; i++){
+		red[i] = getOneRedBall()
+	}
+
+	console.log('开奖号码')
+	console.log('篮球：' + blue)
+	console.log('红球：' + red)
+}
+
+play()
+
+// 阶乘函数 5的阶乘 5*4*3*2*1
+// 0 负数不可以算阶乘
+
+function factorial(n){
+	if(n == 1) return 1
+	return n * factorial(n-1)
+}
+
+</script>
+</body>
+</html>

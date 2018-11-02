@@ -1,0 +1,4 @@
+ul,li{list-style: none;}
+.content{border: 1px solid #ddd; width: 300px; height: 300px;}
+.content > li{display: none;}
+.content > li.curr-step{display: block;}

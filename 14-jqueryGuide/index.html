@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Document</title>
+<link rel="stylesheet" type="text/css" href="./jquery-guide.css">
+</head>
+<body>
+<ul id="my-guide" data-jg-title="user register" data-jg-step="1">
+	<li>step one</li>
+	<li>step two</li>
+	<li>step three</li>
+</ul>
+
+
+<script
+  src="http://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+ <script type="text/javascript" src="./jquery-guide-1.0.0.js"></script>
+ <script type="text/javascript">
+	$("#my-guide").guide({
+		title: 'user manage',
+		step: 1,
+		onStep: function(){
+			alert('It is step' + this.step)
+		},
+		finished: function(){
+			alert('It is finished')
+		}
+	})
+ </script>
+</body>
+</html>

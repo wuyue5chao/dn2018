@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MVVM</title>
+<script type="text/javascript">
+// 1、搭建框架
+// 2、实现 M - V 把 myText 绑定到 视图
+// 3、实现 V - M 把改变文本框的值更新到模型
+
+// 发布者
+class Vue{
+	constructor(options){
+		this.options = options
+		// 传入的数据
+		this.$data = options.data
+		// 传入的根元素
+		this.$el = document.querySelector(options.el)
+		// 存放订阅者
+		this._directives = {}
+		// 处理传入的数据 监听其变化
+		this.Observer(this.$data)
+		// 处理元素 解析指令标签
+		this.Compile(this.$el)
+	}
+	Observer(data){
+		for(let key in data){
+			this._directives[key] = []
+			let Val = data[key]
+			let _obj = this._directives[key]
+
+			Object.defineProperty(this.$data, key, {
+				get: function(){
+					return Val
+				},
+				set: function(newVal){
+					if(Val != newVal){
+						Val = newVal
+						_obj.forEach(element => {
+							element.update()
+						})
+					}
+				}
+			})
+		}
+
+	}
+	Compile(el){
+		// 获取app下面所有子元素
+		let nodes = el.children
+		for(let i=0; i<nodes.length; i++){
+			let node = nodes[i]
+			if(node.children.length){
+				this.Compile(node)  // 遍历树的所有子节点
+			}
+			// 遍历的目的 遍历树所有子元素 筛选出指令元素
+			if(node.hasAttribute('v-text')){
+				// 获取 myText 的值
+				let attrValue = node.getAttribute('v-text')
+				// 添加到订阅者 对象
+				this._directives[attrValue].push(new watcher(node, this, attrValue, 'innerHTML'))
+			}
+			if(node.hasAttribute('v-model')){
+				var _this = this
+				node.addEventListener('input', (function(){
+					let attrValue = node.getAttribute('v-model')
+					_this._directives[attrValue].push(new watcher(node, _this, attrValue, 'value'))	
+
+					// 当文本框发生变化时 更新$data的值
+					return function(){
+						_this.$data[attrValue] = node.value
+
+						console.log(_this.$data[attrValue])
+					}
+				})())
+				
+			}
+		}
+	}
+
+}
+// 订阅者 主要工作 更新数据
+class watcher{
+	constructor(el, vm, exp, attr){
+		this.el = el
+		this.vm = vm
+		this.exp = exp
+		this.attr = attr
+		this.update()
+	}
+	update(){
+		this.el[this.attr] = this.vm.$data[this.exp]
+	}
+}
+</script>
+</head>
+<body>
+<div id="app">
+	<div v-text="myText"></div>
+	<div v-text="myText"></div>
+	<input type="text" v-model="myText"/>
+</div>
+<script type="text/javascript">
+let app = new Vue({
+	el: '#app',
+	data: {
+		myText: 'hello vue',
+	}
+})
+</script>
+</body>
+</html>

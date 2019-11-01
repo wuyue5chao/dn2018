@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MVVM</title>
+<script type="text/javascript">
+// 1、搭建框架
+// 2、实现 M - V 把 myText 绑定到 视图
+// 3、实现 V - M 把改变文本框的值更新到模型
+
+// 发布者
+class Vue{
+	constructor(options){
+		this.options = options
+		// 传入的数据
+		this.$data = options.data
+		// 传入的根元素
+		this.$el = document.querySelector(options.el)
+		// 存放订阅者
+		this._directives = {}
+		// 处理传入的数据 监听其变化
+		this.Observer(this.$data)
+		// 处理元素 解析指令标签
+		this.Compile(this.$el)
+	}
+	pushWatcher (watcher) {
+		if (!this._directives[watcher.key]) {
+			this._directives[watcher.key] = []
+		}
+		this._directives[watcher.key].push(watcher)
+	}
+	Observer(datas){
+		const self = this
+		const handler = {
+			set (target, key, value) {
+				const res = Reflect.set(target, key, value)
+				self._directives[key].map(item => {
+					item.update()
+				})
+				return res
+			}
+		}
+		this.$data = new Proxy(datas, handler)
+	}
+	Compile(el){
+		const nodes = Array.prototype.slice.call(el.children)
+		const data = this.$data
+		nodes.map(node => {
+			if (node.children && node.children.length) {
+				this.Compile(node.children)
+			}
+			const $input = node.tagName.toLocaleUpperCase() === 'INPUT'
+
+			if (node.hasAttribute('v-text')) {
+				const key = node.getAttribute('v-text')
+				this.pushWatcher(new watcher(node, 'innerHTML', data, key))
+			}
+
+			if ($input && node.hasAttribute('v-model')) {
+				const key = node.getAttribute('v-model')
+				this.pushWatcher(new watcher(node, 'value', data, key))
+				node.addEventListener('input', () => {
+					data[key] = node.value
+				})
+			}
+		})
+	}
+
+}
+// 订阅者 主要工作 更新数据
+class watcher{
+	constructor(el, attr, data, key){
+		this.el = el
+		this.attr = attr
+		this.data = data
+		this.key = key
+		this.update()
+	}
+	update(){
+		this.el[this.attr] = this.data[this.key]
+	}
+}
+</script>
+</head>
+<body>
+<div id="app">
+	<div v-text="myText"></div>
+	<input type="text" v-model="myText"/>
+</div>
+<script type="text/javascript">
+let app = new Vue({
+	el: '#app',
+	data: {
+		myText: 'hello vue',
+	}
+})
+</script>
+</body>
+</html>

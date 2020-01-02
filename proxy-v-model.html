@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+<div id="app">
+	<h4 id="paragragh"></h4>
+	<input type="text" id="input" />
+</div>
+
+<script type="text/javascript">
+const paragragh = document.getElementById('paragragh')
+const input = document.getElementById('input')
+
+const data = {
+	text: 'hello'
+}
+
+const handler = {
+	set: function (target, prop, value) {
+		if (prop === 'text') {
+			target[prop] = value
+			paragragh.innerHTML = value
+			input.value = value
+			return true
+		} else {
+			return false
+		}
+	}
+}
+
+const myText = new Proxy(data, handler)
+
+input.addEventListener('input', function (e) {
+	myText.text = e.target.value
+}, false)
+
+myText.text = data.text
+</script>
+</body>
+</html>
